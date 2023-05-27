@@ -23,17 +23,17 @@ struct CameraUniform {
 @group(0) @binding(1)
 var<uniform> cam: CameraUniform;
 
-const MAX_ITERATIONS = 10;
+const MAX_ITERATIONS = 50;
 /* const FOCUS = vec2<f32>(-0.5577, -0.6099); */
 
-const MAX_STEPS = 500;
+const MAX_STEPS = 200;
 const FOV = 90;
 const SIZE = 10.0;
 const OBJ_POS = vec3<f32>(0.0, 0.0, 0.0);
 const LIGHT_POS = vec3<f32>(-50.0, 50.0, 50.0);
-const MIN_DISTANCE = 0.001;
-const MAX_DISTANCE = 10000.0;
-const DELTA = 0.000001;
+const MIN_DISTANCE = 0.00001;
+const MAX_DISTANCE = 100.0;
+const DELTA = 0.001;
 const AMBIENT_LIGHT = vec3<f32>(0.1, 0.1, 0.1);
 const LIGHT_INTENSITY = 0.4;
 
@@ -141,17 +141,16 @@ fn phong(p: vec3<f32>) -> vec3<f32> {
 
 // Input a pos, outputs a color
 fn on_hit(pos: vec3<f32>) -> vec3<f32> {
-    return normals(pos);
-    // return phong(pos);
+    // return normals(pos);
+    return phong(pos);
 }
 
 fn to_quat(pos: vec3<f32>) -> vec4<f32> {
-    return vec4(pos, 0.0);
+    return quaternion_mul(vec4(pos, 0.0), vec4(1.0, 0.0, 0.0, 0.0));
 }
 
-@fragment
-fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-    let real_pos = vec3(in.real_pos.xy, in.real_pos.z);
+fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
+    let real_pos = vec3(real_pos.xy, real_pos.z);
     let ray_direction = normalize(real_pos);
     var ray_pos = real_pos + cam.pos;
 
@@ -164,13 +163,28 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
         steps++;
     }
 
-    var color: vec3<f32>;
     if distance < MIN_DISTANCE {
-        color = on_hit(ray_pos);
+        return on_hit(ray_pos);
     } else {
-        color = vec3(0.0, 0.0, 0.0);
+        return vec3(0.0, 0.0, 0.0);
     }
+}
 
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
+    let pos = mat4x3(
+        in.real_pos + vec3(0.0001, 0.0, 0.0),
+        in.real_pos + vec3(0.0, 0.0001, 0.0),
+        in.real_pos - vec3(0.0001, 0.0, 0.0),
+        in.real_pos - vec3(0.0, 0.0001, 0.0),
+    );
+    let color = (
+        get_color(in.real_pos) + 
+        get_color(pos.x) + 
+        get_color(pos.y) + 
+        get_color(pos.z) + 
+        get_color(pos.w)
+    ) / 5.0;
     return vec4<f32>(color, 1.0);
     /* return vec4<f32>(vec3(f32(steps / MAX_STEPS)), 1.0); */
 }
