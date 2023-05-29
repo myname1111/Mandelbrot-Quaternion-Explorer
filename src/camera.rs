@@ -1,33 +1,19 @@
 use winit::event::{ElementState, KeyboardInput, VirtualKeyCode, WindowEvent};
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable, Default)]
 pub struct Camera {
     pos: [f32; 3],
     _padding: u32,
     rot: [[f32; 4]; 4],
-    scale: f32,
-    _padding0: [u32; 3],
-}
-
-impl Default for Camera {
-    fn default() -> Self {
-        Self {
-            pos: Default::default(),
-            _padding: Default::default(),
-            rot: Default::default(),
-            scale: 1.0,
-            _padding0: Default::default(),
-        }
-    }
 }
 
 #[derive(Default)]
 pub struct CameraController {
     speed: f32,
     rotation_speed: f32,
-    scaling_speed: f32,
-    ssi: f32, // scaling speed inverse
+    speed_multiplier: f32,
+    smi: f32, // speed multiplier inverse
     is_forward_pressed: bool,
     is_backward_pressed: bool,
     is_left_pressed: bool,
@@ -52,18 +38,18 @@ fn pos_updated(
     speed: f32,
 ) {
     let speed = if is_backward { speed * -1.0 } else { speed };
-    camera.pos[0] += speed * rotated[index][0] * camera.scale;
-    camera.pos[1] += speed * rotated[index][1] * camera.scale;
-    camera.pos[2] += speed * rotated[index][2] * camera.scale;
+    camera.pos[0] += speed * rotated[index][0];
+    camera.pos[1] += speed * rotated[index][1];
+    camera.pos[2] += speed * rotated[index][2];
 }
 
 impl CameraController {
-    pub fn new(speed: f32, rotation_speed: f32, scaling_speed: f32) -> Self {
+    pub fn new(speed: f32, rotation_speed: f32, speed_multiplier: f32) -> Self {
         Self {
             rotation_speed,
             speed,
-            scaling_speed,
-            ssi: 1.0 / scaling_speed,
+            speed_multiplier,
+            smi: 1.0 / speed_multiplier,
             ..Default::default()
         }
     }
@@ -137,7 +123,7 @@ impl CameraController {
     }
 
     pub fn update_camera(&mut self, camera: &mut Camera) {
-        println!("{}", camera.scale);
+        println!("{}", self.speed);
 
         let (pitch_sin, pitch_cos) = self.pitch.sin_cos();
         let (yaw_sin, yaw_cos) = self.yaw.sin_cos();
@@ -196,11 +182,11 @@ impl CameraController {
         }
 
         if self.is_scale_up {
-            camera.scale *= self.scaling_speed
+            self.speed *= self.speed_multiplier
         }
 
         if self.is_scale_down {
-            camera.scale *= self.ssi
+            self.speed *= self.smi
         }
     }
 }

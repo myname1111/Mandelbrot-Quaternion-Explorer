@@ -18,7 +18,6 @@ var<uniform> zoom: ZoomUniform;
 struct CameraUniform {
     pos: vec3<f32>,
     rot: mat4x4<f32>,
-    scale: f32
 }
 
 @group(0) @binding(1)
@@ -44,7 +43,7 @@ fn vs_main(
 ) -> VertexOutput {
     var out: VertexOutput;
     out.clip_position = vec4<f32>(model.position, 1.0);
-    out.real_pos = (cam.rot * vec4<f32>(model.real_pos, 1.0)).xyz * cam.scale;
+    out.real_pos = (cam.rot * vec4<f32>(model.real_pos, 1.0)).xyz;
     return out;
 }
 
@@ -170,13 +169,16 @@ fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
     }
 }
 
+// Must be the same as lib.rs
+const SCALE = 0.0001;
+
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let pos = mat4x3(
-        in.real_pos + vec3(0.001 * cam.scale, 0.0, 0.0),
-        in.real_pos + vec3(0.0, 0.001 * cam.scale, 0.0),
-        in.real_pos - vec3(0.001 * cam.scale, 0.0, 0.0),
-        in.real_pos - vec3(0.0, 0.001 * cam.scale, 0.0),
+        in.real_pos + vec3(0.001 * SCALE, 0.0, 0.0),
+        in.real_pos + vec3(0.0, 0.001 * SCALE, 0.0),
+        in.real_pos - vec3(0.001 * SCALE, 0.0, 0.0),
+        in.real_pos - vec3(0.0, 0.001 * SCALE, 0.0),
     );
     let color = (
         get_color(in.real_pos) + 

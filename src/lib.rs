@@ -262,12 +262,17 @@ struct Vertex {
     real_pos: [f32; 3],
 }
 
+// The camera size multiplier
+// The smaller the better
+// Until floating point prec errors
+const SCALE: f32 = 0.0001;
+
 #[rustfmt::skip]
 const VERTICES: &[Vertex] = &[
-    Vertex { position: [-1.0, -1.0, 0.0], real_pos: [-2.0, -1.125, 2.0] },
-    Vertex { position: [1.0, -1.0, 0.0], real_pos: [2.0, -1.125, 2.0] },
-    Vertex { position: [-1.0, 1.0, 0.0], real_pos: [-2.0, 1.125, 2.0] },
-    Vertex { position: [1.0, 1.0, 0.0], real_pos: [2.0, 1.125, 2.0]},
+    Vertex { position: [-1.0, -1.0, 0.0], real_pos: [-2.0 * SCALE, -1.125 * SCALE, 2.0 * SCALE] },
+    Vertex { position: [1.0, -1.0, 0.0], real_pos: [2.0 * SCALE, -1.125 * SCALE, 2.0 * SCALE] },
+    Vertex { position: [-1.0, 1.0, 0.0], real_pos: [-2.0 * SCALE, 1.125 * SCALE, 2.0 * SCALE] },
+    Vertex { position: [1.0, 1.0, 0.0], real_pos: [2.0 * SCALE, 1.125 * SCALE, 2.0 * SCALE]},
 ];
 
 #[rustfmt::skip]
