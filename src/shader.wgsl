@@ -70,7 +70,7 @@ fn quaternion_mul(a: vec4<f32>, b: vec4<f32>) -> vec4<f32> {
 fn mandelbrot(pos: vec4<f32>) -> f32 {
     var iters = 0;
     let c = pos;
-    var z = vec4(0.0);
+    var z = vec4(pos.x, -pos.z, -pos.y, pos.w);
     var dr = 1.0;
     var r = 0.0;
 
@@ -146,7 +146,7 @@ fn on_hit(pos: vec3<f32>) -> vec3<f32> {
 }
 
 fn to_quat(pos: vec3<f32>) -> vec4<f32> {
-    return quaternion_mul(vec4(pos, 0.0), vec4(1.0, 0.0, 0.0, 0.0));
+    return vec4(pos, 0.0);
 }
 
 fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
