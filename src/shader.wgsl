@@ -71,22 +71,22 @@ fn mandelbrot(pos: vec4<f32>) -> f32 {
     var iters = 0;
     let c = pos;
     var z = vec4(pos.x, -pos.z, -pos.y, pos.w);
-    var dr = 1.0;
-    var r = 0.0;
+    var dz = vec4(1.0, vec3(0.0));
 
     while iters <= MAX_ITERATIONS {
+        dz = 2.0 * vec4(z.x * dz.x - dot(z.yzw, dz.yzw), z.x * dz.yzw + dz.x * z.yzw + cross(z.yzw, dz.yzw));
         z = quaternion_mul(z, z) + c;
 
-        r = length(z);
-        if r > 2.0 {
+        let z2 = dot(z, z);
+        if z2 > 4.0 {
             break
         }
 
-        dr = 2.0 * r * dr + 1.0;
         iters++;
     }
 
-    return 0.5 * log(r) * r / dr;
+    let r = length(z);
+    return 0.5 * log(r) * r / length(dz);
 }
 
 fn DE(pos: vec3<f32>) -> f32 {
