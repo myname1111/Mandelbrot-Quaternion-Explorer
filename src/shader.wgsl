@@ -151,7 +151,6 @@ fn to_quat(pos: vec3<f32>) -> vec4<f32> {
 }
 
 fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
-    let real_pos = vec3(real_pos.xy, real_pos.z);
     let ray_direction = normalize(real_pos);
     var ray_pos = real_pos + cam.pos;
 
