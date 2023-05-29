@@ -262,14 +262,12 @@ struct Vertex {
     real_pos: [f32; 3],
 }
 
-const SCALE: f32 = 0.1;
-
 #[rustfmt::skip]
 const VERTICES: &[Vertex] = &[
-    Vertex { position: [-1.0, -1.0, 0.0], real_pos: [-2.0 * SCALE, -1.125 * SCALE, 2.0 * SCALE] },
-    Vertex { position: [1.0, -1.0, 0.0], real_pos: [2.0 * SCALE, -1.125 * SCALE, 2.0 * SCALE] },
-    Vertex { position: [-1.0, 1.0, 0.0], real_pos: [-2.0 * SCALE, 1.125 * SCALE, 2.0 * SCALE] },
-    Vertex { position: [1.0, 1.0, 0.0], real_pos: [2.0 * SCALE, 1.125 * SCALE, 2.0 * SCALE]},
+    Vertex { position: [-1.0, -1.0, 0.0], real_pos: [-2.0, -1.125, 2.0] },
+    Vertex { position: [1.0, -1.0, 0.0], real_pos: [2.0, -1.125, 2.0] },
+    Vertex { position: [-1.0, 1.0, 0.0], real_pos: [-2.0, 1.125, 2.0] },
+    Vertex { position: [1.0, 1.0, 0.0], real_pos: [2.0, 1.125, 2.0]},
 ];
 
 #[rustfmt::skip]
@@ -326,7 +324,7 @@ impl State {
 
         let num_indices = INDICES.len() as u32;
 
-        let camera_controller = CameraController::new(0.05 * SCALE, 0.02);
+        let camera_controller = CameraController::new(0.05, 0.02, 1.01);
 
         Self {
             window,

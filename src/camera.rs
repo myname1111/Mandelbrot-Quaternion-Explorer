@@ -1,17 +1,33 @@
 use winit::event::{ElementState, KeyboardInput, VirtualKeyCode, WindowEvent};
 
 #[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable, Default)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct Camera {
     pos: [f32; 3],
     _padding: u32,
     rot: [[f32; 4]; 4],
+    scale: f32,
+    _padding0: [u32; 3],
+}
+
+impl Default for Camera {
+    fn default() -> Self {
+        Self {
+            pos: Default::default(),
+            _padding: Default::default(),
+            rot: Default::default(),
+            scale: 1.0,
+            _padding0: Default::default(),
+        }
+    }
 }
 
 #[derive(Default)]
 pub struct CameraController {
     speed: f32,
     rotation_speed: f32,
+    scaling_speed: f32,
+    ssi: f32, // scaling speed inverse
     is_forward_pressed: bool,
     is_backward_pressed: bool,
     is_left_pressed: bool,
@@ -22,22 +38,32 @@ pub struct CameraController {
     is_yaw_right: bool,
     is_pitch_up: bool,
     is_pitch_down: bool,
+    is_scale_up: bool,
+    is_scale_down: bool,
     yaw: f32,
     pitch: f32,
 }
 
-fn pos_updated(pos: &mut [f32], is_backward: bool, index: usize, rotated: &[[f32; 3]], speed: f32) {
+fn pos_updated(
+    camera: &mut Camera,
+    is_backward: bool,
+    index: usize,
+    rotated: &[[f32; 3]],
+    speed: f32,
+) {
     let speed = if is_backward { speed * -1.0 } else { speed };
-    pos[0] += speed * rotated[index][0];
-    pos[1] += speed * rotated[index][1];
-    pos[2] += speed * rotated[index][2];
+    camera.pos[0] += speed * rotated[index][0] * camera.scale;
+    camera.pos[1] += speed * rotated[index][1] * camera.scale;
+    camera.pos[2] += speed * rotated[index][2] * camera.scale;
 }
 
 impl CameraController {
-    pub fn new(speed: f32, rotation_speed: f32) -> Self {
+    pub fn new(speed: f32, rotation_speed: f32, scaling_speed: f32) -> Self {
         Self {
             rotation_speed,
             speed,
+            scaling_speed,
+            ssi: 1.0 / scaling_speed,
             ..Default::default()
         }
     }
@@ -95,6 +121,14 @@ impl CameraController {
                         self.is_yaw_right = is_pressed;
                         true
                     }
+                    VirtualKeyCode::Key0 => {
+                        self.is_scale_up = is_pressed;
+                        true
+                    }
+                    VirtualKeyCode::Key1 => {
+                        self.is_scale_down = is_pressed;
+                        true
+                    }
                     _ => false,
                 }
             }
@@ -103,6 +137,8 @@ impl CameraController {
     }
 
     pub fn update_camera(&mut self, camera: &mut Camera) {
+        println!("{}", camera.scale);
+
         let (pitch_sin, pitch_cos) = self.pitch.sin_cos();
         let (yaw_sin, yaw_cos) = self.yaw.sin_cos();
 
@@ -120,27 +156,27 @@ impl CameraController {
         ];
 
         if self.is_left_pressed {
-            pos_updated(&mut camera.pos, true, 0, &rotated, self.speed)
+            pos_updated(camera, true, 0, &rotated, self.speed)
         }
 
         if self.is_right_pressed {
-            pos_updated(&mut camera.pos, false, 0, &rotated, self.speed)
+            pos_updated(camera, false, 0, &rotated, self.speed)
         }
 
         if self.is_backward_pressed {
-            pos_updated(&mut camera.pos, true, 2, &rotated, self.speed)
+            pos_updated(camera, true, 2, &rotated, self.speed)
         }
 
         if self.is_forward_pressed {
-            pos_updated(&mut camera.pos, false, 2, &rotated, self.speed)
+            pos_updated(camera, false, 2, &rotated, self.speed)
         }
 
         if self.is_down_pressed {
-            pos_updated(&mut camera.pos, true, 1, &rotated, self.speed)
+            pos_updated(camera, true, 1, &rotated, self.speed)
         }
 
         if self.is_up_pressed {
-            pos_updated(&mut camera.pos, false, 1, &rotated, self.speed)
+            pos_updated(camera, false, 1, &rotated, self.speed)
         }
 
         if self.is_pitch_down {
@@ -157,6 +193,14 @@ impl CameraController {
 
         if self.is_yaw_left {
             self.yaw += self.rotation_speed
+        }
+
+        if self.is_scale_up {
+            camera.scale *= self.scaling_speed
+        }
+
+        if self.is_scale_down {
+            camera.scale *= self.ssi
         }
     }
 }
