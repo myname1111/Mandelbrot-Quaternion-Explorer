@@ -78,7 +78,7 @@ fn mandelbrot(pos: vec4<f32>) -> f32 {
         dz = 2.0 * vec4(z.x * dz.x - dot(z.yzw, dz.yzw), z.x * dz.yzw + dz.x * z.yzw + cross(z.yzw, dz.yzw));
 
         let z2 = dot(z, z);
-        if z2 > 4.0 {
+        if z2 > 10.0 {
             break
         }
 
