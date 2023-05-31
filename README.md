@@ -6,7 +6,7 @@ It is important to note that before this z must be equal to pos, essentially ski
 Sorry for all the bugs, I spent most of my time looking for a good "true" representation of the Mandelbrot set in 3D
 
 Images:
-![Image 1](/photos/img1.png)
-![Image 2](/photos/img2.png)
-![Image 3](/photos/img3.png)
-![Image 4](/photos/img4.png)
+![Image 1](/results/img1.png)
+![Image 2](/results/img2.png)
+![Image 3](/results/img3.png)
+![Image 4](/results/img4.png)
