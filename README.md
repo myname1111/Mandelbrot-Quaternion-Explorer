@@ -3,7 +3,7 @@ Hello this is a custom program i made to explore the quaternion version of the m
 z.yz = -z.zy
 ```
 It is important to note that before this z must be equal to pos, essentially skipping one iteration, and that it does not affect c.
-Sorry for all, I spent 90% of my time trying to find a good quaternion mandelbrot, and just abandoned the ray tracer
+Sorry for all the bugs, I spent most of my time looking for a good "true" representation of the Mandelbrot set in 3D
 
 Images:
 ![Image 1](/photos/img1.png)
