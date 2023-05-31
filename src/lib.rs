@@ -329,7 +329,7 @@ impl State {
 
         let num_indices = INDICES.len() as u32;
 
-        let camera_controller = CameraController::new(0.05, 0.02, 1.01);
+        let camera_controller = CameraController::new(0.05, 0.02, 1.1);
 
         Self {
             window,

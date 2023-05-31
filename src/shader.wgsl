@@ -23,15 +23,15 @@ struct CameraUniform {
 @group(0) @binding(1)
 var<uniform> cam: CameraUniform;
 
-const MAX_ITERATIONS = 50;
+const MAX_ITERATIONS = 200;
 /* const FOCUS = vec2<f32>(-0.5577, -0.6099); */
 
-const MAX_STEPS = 200;
+const MAX_STEPS = 500;
 const FOV = 90;
 const SIZE = 10.0;
 const OBJ_POS = vec3<f32>(0.0, 0.0, 0.0);
 const LIGHT_POS = vec3<f32>(-50.0, 50.0, 50.0);
-const MIN_DISTANCE = 0.0001;
+const MIN_DISTANCE = 0.00001;
 const MAX_DISTANCE = 100.0;
 const DELTA = 0.001;
 const AMBIENT_LIGHT = vec3<f32>(0.1, 0.1, 0.1);
@@ -162,11 +162,7 @@ fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
         steps++;
     }
 
-    if distance < MIN_DISTANCE {
-        return on_hit(ray_pos);
-    } else {
-        return vec3(0.0, 0.0, 0.0);
-    }
+    return vec3(f32(steps) / f32(MAX_STEPS), 0.0, 0.0);
 }
 
 // Must be the same as lib.rs
@@ -174,19 +170,19 @@ const SCALE = 0.0001;
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-    let pos = mat4x3(
-        in.real_pos + vec3(0.001 * SCALE, 0.0, 0.0),
-        in.real_pos + vec3(0.0, 0.001 * SCALE, 0.0),
-        in.real_pos - vec3(0.001 * SCALE, 0.0, 0.0),
-        in.real_pos - vec3(0.0, 0.001 * SCALE, 0.0),
-    );
-    let color = (
-        get_color(in.real_pos) + 
-        get_color(pos.x) + 
-        get_color(pos.y) + 
-        get_color(pos.z) + 
-        get_color(pos.w)
-    ) / 5.0;
-    return vec4<f32>(color, 1.0);
-    /* return vec4<f32>(vec3(f32(steps / MAX_STEPS)), 1.0); */
+    /* let pos = mat4x3( */
+    /*     in.real_pos + vec3(0.001 * SCALE, 0.0, 0.0), */
+    /*     in.real_pos + vec3(0.0, 0.001 * SCALE, 0.0), */
+    /*     in.real_pos - vec3(0.001 * SCALE, 0.0, 0.0), */
+    /*     in.real_pos - vec3(0.0, 0.001 * SCALE, 0.0), */
+    /* ); */
+    /* let color = ( */
+    /*     get_color(in.real_pos) +  */
+    /*     get_color(pos.x) +  */
+    /*     get_color(pos.y) +  */
+    /*     get_color(pos.z) +  */
+    /*     get_color(pos.w) */
+    /* ) / 5.0; */
+    /* return vec4<f32>(color, 1.0); */
+    return vec4(get_color(in.real_pos), 1.0);
 }
