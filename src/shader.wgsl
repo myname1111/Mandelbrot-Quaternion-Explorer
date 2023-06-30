@@ -61,16 +61,16 @@ fn quaternion_mul(a: vec4<f32>, b: vec4<f32>) -> vec4<f32> {
     // CHECK AGAIN!!!
     return vec4<f32>(
         a.x * b.x - a.y * b.y - a.z * b.z - a.w * b.w,
-        a.y * b.x + a.x * b.y + a.z * b.w - a.w * b.z,
-        a.x * b.z - a.y * b.w + a.z * b.x + a.w * b.y,
-        a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x
+        a.y * b.x + a.x * b.y + a.z * b.w + a.w * b.z,
+        a.x * b.z - a.y * b.w + a.z * b.x - a.w * b.y,
+        a.x * b.w + a.y * b.z + a.z * b.y + a.w * b.x
     );
 }
 
 fn mandelbrot(pos: vec4<f32>) -> f32 {
     var iters = 0;
     let c = pos;
-    var z = vec4(pos.x, -pos.z, -pos.y, pos.w);
+    var z = vec4(pos.x, pos.y, pos.z, pos.w);
     var dz = vec4(1.0, vec3(0.0));
 
     while iters <= MAX_ITERATIONS {
