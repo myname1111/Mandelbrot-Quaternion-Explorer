@@ -26,12 +26,12 @@ var<uniform> cam: CameraUniform;
 const MAX_ITERATIONS = 200;
 /* const FOCUS = vec2<f32>(-0.5577, -0.6099); */
 
-const MAX_STEPS = 500;
+const MAX_STEPS = 1000;
 const FOV = 90;
 const SIZE = 10.0;
 const OBJ_POS = vec3<f32>(0.0, 0.0, 0.0);
 const LIGHT_POS = vec3<f32>(-50.0, 50.0, 50.0);
-const MIN_DISTANCE = 0.00001;
+const MIN_DISTANCE = 0.0000001;
 const MAX_DISTANCE = 100.0;
 const DELTA = 0.001;
 const AMBIENT_LIGHT = vec3<f32>(0.1, 0.1, 0.1);
@@ -162,12 +162,12 @@ fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
         steps++;
     }
 
-    var color = vec3(0.0);
-    if distance < MIN_DISTANCE {
-        color = on_hit(ray_pos);
-    }
+    /* var color = vec3(0.0); */
+    /* if distance < MIN_DISTANCE { */
+    /*     color = on_hit(ray_pos); */
+    /* } */
 
-    return color;
+    return vec3(f32(steps) / f32(MAX_STEPS), 0.0, 0.0);
 }
 
 // Must be the same as lib.rs
