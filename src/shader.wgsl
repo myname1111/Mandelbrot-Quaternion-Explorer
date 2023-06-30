@@ -162,7 +162,12 @@ fn get_color(real_pos: vec3<f32>) -> vec3<f32> {
         steps++;
     }
 
-    return vec3(f32(steps) / f32(MAX_STEPS), 0.0, 0.0);
+    var color = vec3(0.0);
+    if distance < MIN_DISTANCE {
+        color = on_hit(ray_pos);
+    }
+
+    return color;
 }
 
 // Must be the same as lib.rs
